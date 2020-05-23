@@ -1,0 +1,116 @@
+﻿<UserControl x:Class="CMS_Application.View.EntitiesQueryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CMS_Application.View"
+             xmlns:view="clr-namespace:CMS_Application.View"
+             mc:Ignorable="d" Width="500" Height="350">
+
+    <UserControl.Resources>
+        <view:InvertBoolConverter x:Key="InvertBoolConverter"/>
+        <view:VisibilityConverter x:Key="VisibilityConverter" />
+
+    </UserControl.Resources>
+
+    <Grid>
+
+        <Grid Visibility="{Binding IsNotSyncing, Converter={StaticResource VisibilityConverter}}">
+
+            <Grid.Resources>
+
+                <Style x:Key="alternatingStyle" TargetType="{x:Type ListViewItem}">
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="AliceBlue"></Setter>
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="White"></Setter>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+
+            </Grid.Resources>
+
+
+            <Label x:Name="labelFilePath" Content="File path:" HorizontalAlignment="Left" Margin="9,15,0,0" VerticalAlignment="Top" Height="25" Width="76"/>
+            <TextBox x:Name="textBoxFilePath" HorizontalAlignment="Left" Height="23" Margin="97,17,0,0" TextWrapping="NoWrap" Text="{Binding FilePath}" VerticalAlignment="Top" Width="252"
+                     AcceptsReturn="False" />
+
+            <TextBlock HorizontalAlignment="Left" Margin="14,74,0,251" FontSize="10">
+                <Hyperlink NavigateUri="file://keywords.txt" Click="Url_Click">edit keywords</Hyperlink>
+            </TextBlock>
+
+            <Button x:Name="buttonFilePath" Content="..." HorizontalAlignment="Left" Margin="360,17,0,0" VerticalAlignment="Top" Width="28" Height="23" Command="{Binding GetFilePath}"/>
+
+            <Label x:Name="labelKeyword" Content="Keyword:" HorizontalAlignment="Left" Margin="9,50,0,0" VerticalAlignment="Top" Height="25" Width="76"/>
+            <Button x:Name="buttonQuery" Content="Search" HorizontalAlignment="Left" Margin="399,29,0,0" VerticalAlignment="Top" Width="91"
+                    Command="{Binding QueryCommand}" Height="38"/>
+            <ListView x:Name="listviewEntities" HorizontalAlignment="Left" Height="177" Margin="10,126,0,0" VerticalAlignment="Top" Width="480"
+                      ItemContainerStyle="{StaticResource alternatingStyle}" AlternationCount="2"
+                     ItemsSource="{Binding Entities}">
+
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition SharedSizeGroup="EntityName" />
+                                <ColumnDefinition SharedSizeGroup="EntityNumber" />
+                                <ColumnDefinition SharedSizeGroup="RegistrationDate" />
+                                <ColumnDefinition SharedSizeGroup="Jurisdiction" />
+                                <ColumnDefinition SharedSizeGroup="EntityAddress" />
+                                <ColumnDefinition SharedSizeGroup="EntityCityStateZip" />
+                                <ColumnDefinition SharedSizeGroup="AgentForServiceOfProcess" />
+                                <ColumnDefinition SharedSizeGroup="Status" />
+                                <ColumnDefinition SharedSizeGroup="EntityType" />
+                                <ColumnDefinition SharedSizeGroup="EntityClassification" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0"  BorderBrush="DarkGray" BorderThickness="1"/>
+                            <Border Grid.Column="2"  BorderBrush="DarkGray" BorderThickness="1"/>
+                            <Border Grid.Column="4"  BorderBrush="DarkGray" BorderThickness="1"/>
+                            <Border Grid.Column="6"  BorderBrush="DarkGray" BorderThickness="1"/>
+                            <Border Grid.Column="8"  BorderBrush="DarkGray" BorderThickness="1"/>
+
+                            <TextBlock Margin="2" Text="{Binding EntityName}" Grid.Column="0"/>
+                            <TextBlock Margin="2" Text="{Binding EntityNumber}" Grid.Column="1"/>
+                            <TextBlock Margin="2"  Text="{Binding RegistrationDate}" Grid.Column="2"/>
+                            <TextBlock Margin="2"  Text="{Binding Jurisdiction}" Grid.Column="3"/>
+                            <TextBlock Margin="2"  Text="{Binding EntityAddress}" Grid.Column="4"/>
+                            <TextBlock Margin="2"  Text="{Binding EntityCityStateZip}" Grid.Column="5"/>
+                            <TextBlock Margin="2"  Text="{Binding AgentForServiceOfProcess}" Grid.Column="6"/>
+                            <TextBlock Margin="2"  Text="{Binding Status}" Grid.Column="7"/>
+                            <TextBlock Margin="2"  Text="{Binding EntityType}" Grid.Column="8"/>
+                            <TextBlock Margin="2"  Text="{Binding EntityClassification}" Grid.Column="9"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+
+            </ListView>
+            <Label x:Name="labelFound" Content="Found:" HorizontalAlignment="Left" Margin="21,313,0,0" VerticalAlignment="Top" Width="69"/>
+            <TextBox x:Name="textBoxFound" HorizontalAlignment="Left" Height="23" Margin="78,314,0,0" TextWrapping="Wrap" Text="{Binding EntitiesCount, Mode=OneWay}" 
+                     VerticalAlignment="Top" Width="71" IsReadOnly="True" Background="LightGray"/>
+
+            <CheckBox x:Name="checkBoxSearchByMonthYear" Content="Search by month and year" HorizontalAlignment="Left" Margin="97,94,0,0" VerticalAlignment="Top" 
+                      IsChecked="{Binding SearchByMonthYear}"/>
+
+            <DatePicker HorizontalAlignment="Left" Margin="268,89,0,0" VerticalAlignment="Top" SelectedDate="{Binding MonthYearFilter}" Width="120"
+                        Visibility="{Binding SearchByMonthYear, Converter={StaticResource VisibilityConverter}}"
+                        local:DatePickerCalendar.IsMonthYear="True"
+                        local:DatePickerDateFormat.DateFormat="MM/yyyy"/>
+
+            <ComboBox x:Name="ComboBoxKeyword" HorizontalAlignment="Left" Margin="97,53,0,0" VerticalAlignment="Top" Width="291"
+                      Text="{Binding Keyword, UpdateSourceTrigger=LostFocus}"
+                      IsEditable="True" GotFocus="ComboBoxKeyword_GotFocus"/>
+
+        </Grid>
+
+        <Grid Visibility="{Binding IsSyncing, Converter={StaticResource VisibilityConverter}}">
+            <Border BorderBrush="DarkGray" Background="AliceBlue" BorderThickness="2" HorizontalAlignment="Left" Height="132" Margin="65,151,0,0" VerticalAlignment="Top" Width="384"/>
+            <Image x:Name="ConnectionErrorIcon" HorizontalAlignment="Left" Height="64" VerticalAlignment="Top" Width="64"
+                    Source="/CMS_Application;component/Images/California.png" Margin="224,172,0,0"/>
+
+            <Label x:Name="labelDataSync" Content="data synchronization" HorizontalAlignment="Left" Margin="197,241,0,0" VerticalAlignment="Top"/>
+        </Grid>
+    </Grid>
+</UserControl>
